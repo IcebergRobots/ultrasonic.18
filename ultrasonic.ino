@@ -12,7 +12,7 @@
 
 #define UsInterrupt 3                 //Interrupt-Pin, der aktiviert wird, um die US-Werte abzufragen
 
-#include <NewPing.h>                  //Die NewPing-Libary, über welche die US-Sensoren ausgelesen werden, wird importiert
+#include <NewPing.h>
 
 //------------------------------------------------------------
 
@@ -49,7 +49,7 @@ void usAusgeben(){                  //Methode wird beim Interrupt aufgerufen und
     Serial.write(wert[i]);          //sendet die Werte über UART an den Arduino Mega
   } 
 }
-
+/* Was ist das??
   byte output = 42;
   byte input;
 
@@ -60,3 +60,4 @@ void usAusgeben(){                  //Methode wird beim Interrupt aufgerufen und
   if(Serial.available() > 0){  //prüfen, ob ein Byte gesendet wurde
     input = Serial.read()      //empfangen eines Bytes
   }
+*/
