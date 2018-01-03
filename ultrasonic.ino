@@ -25,7 +25,7 @@ NewPing sonarR(US_Right, US_Right, MAX_DISTANCE);   //Hier wird das Objekt für 
 
 //------------------------------------------------------------
 
-void setup(){                                                                //Setup-Methode
+void setup(){
   pinMode(13,OUTPUT);
   Serial.begin(9600);                                                        //startet die Serielle Kommunikation
   pinMode(UsInterrupt,INPUT);                                                //definiert den Interupt-Pin als Eingang
@@ -60,5 +60,3 @@ void usAusgeben(){                  //Methode wird beim Interrupt aufgerufen und
   if(Serial.available() > 0){  //prüfen, ob ein Byte gesendet wurde
     input = Serial.read()      //empfangen eines Bytes
   }
-
-
