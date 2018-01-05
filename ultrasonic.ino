@@ -1,8 +1,10 @@
-#include "NewPing.h"
-
 /* ----------ICEBERG ROBOTS----------
  *  Ultraschallnano 2018
+ *  - misst kontinuierlich Messwerte der Ultraschallsensoren
+ *  - zum Abrufen sendet der Hauptkontroller einen Interupt-Befehl
 */
+
+#include "NewPing.h"
 
 //Pins der Ultraschall-Sensoren
 #define US_Front 12                   //Der Ultraschallsensor vorne
