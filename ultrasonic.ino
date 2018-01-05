@@ -1,3 +1,5 @@
+#include "NewPing.h"
+
 /* ----------ICEBERG ROBOTS----------
  *  Ultraschallnano 2018
 */
@@ -11,8 +13,6 @@
 #define MAX_DISTANCE 250              //Die maximale Distanz (in cm), welche die US-Sensoren messen
 
 #define UsInterrupt 3                 //Interrupt-Pin, der aktiviert wird, um die US-Werte abzufragen
-
-#include <NewPing.h>
 
 //------------------------------------------------------------
 
@@ -49,15 +49,3 @@ void usAusgeben(){                  //Methode wird beim Interrupt aufgerufen und
     Serial.write(wert[i]);          //sendet die Werte über UART an den Arduino Mega
   } 
 }
-/* Was ist das??
-  byte output = 42;
-  byte input;
-
-  //senden:
-  Serial.write(output);        //senden eines Bytes
-
-  //empfangen:
-  if(Serial.available() > 0){  //prüfen, ob ein Byte gesendet wurde
-    input = Serial.read()      //empfangen eines Bytes
-  }
-*/
