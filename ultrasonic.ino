@@ -20,7 +20,9 @@
 #define DEBUG true
 #define debug(_str_); if(DEBUG){Serial.print(_str_);}
 #define debugln(_str_); if(DEBUG){Serial.println(_str_);}
-
+unsigned long lastLoop = 0;
+unsigned long lastLed = 0;
+bool isLed = true;
 
 //------------------------------------------------------------
 
@@ -41,12 +43,18 @@ void setup(){
 //------------------------------------------------------------
 
 void loop(){                        //Loop-Methode
+  digitalWrite(13,isLed);
   wert[0] = sonarR.ping_cm();       //Auslesen des rechten Ultraschallsensors
   wert[1] = sonarF.ping_cm();       //Auslesen des vorderen Ultraschallsensors
   wert[2] = sonarL.ping_cm();       //Auslesen des linken Ultraschallsensors
   wert[3] = sonarB.ping_cm();       //Auslesen des hinteren Ultraschallsensors
   debugln("Right="+(String)wert[0]+" Front="+(String)wert[1]+" Left="+(String)wert[2]+" Back="+(String)wert[3]);
-  delay(30);                        //kurze Wartezeit, da die Ultraschallsensoren nicht direkt hintereinander ausgelesen werden können
+  while(millis()-lastLoop<30) {}    //kurze Wartezeit, da die Ultraschallsensoren nicht direkt hintereinander ausgelesen werden können
+  lastLoop = millis();
+  if(millis()-lastLed>1000) {
+    lastLed = millis();
+    isLed = !isLed;
+  }
 }
 
 //------------------------------------------------------------
