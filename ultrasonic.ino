@@ -15,6 +15,8 @@
 #define MAX_DISTANCE 250              //Die maximale Distanz (in cm), welche die US-Sensoren messen
 
 #define UsInterrupt 3                 //Interrupt-Pin, der aktiviert wird, um die US-Werte abzufragen
+#define LOOP_TIME 30                  //Zeit nach der die Schleife wiederholt wird
+#define LED_TIME 1000                 //Zeit nach der die Led umschaltet
 
 // Debug Modus, um Daten über USB auszulesen
 #define DEBUG true
@@ -49,12 +51,14 @@ void loop(){                        //Loop-Methode
   wert[2] = sonarL.ping_cm();       //Auslesen des linken Ultraschallsensors
   wert[3] = sonarB.ping_cm();       //Auslesen des hinteren Ultraschallsensors
   debugln("Right="+(String)wert[0]+" Front="+(String)wert[1]+" Left="+(String)wert[2]+" Back="+(String)wert[3]);
-  while(millis()-lastLoop<30) {}    //kurze Wartezeit, da die Ultraschallsensoren nicht direkt hintereinander ausgelesen werden können
+  do {    //kurze Wartezeit, da die Ultraschallsensoren nicht direkt hintereinander ausgelesen werden können
+    if(millis()-lastLed>=LED_TIME) {
+      lastLed = millis();
+      isLed = !isLed;
+    }
+  } while(millis()-lastLoop<LOOP_TIME);
   lastLoop = millis();
-  if(millis()-lastLed>1000) {
-    lastLed = millis();
-    isLed = !isLed;
-  }
+  
 }
 
 //------------------------------------------------------------
