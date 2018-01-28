@@ -14,7 +14,7 @@
 
 #define MAX_DISTANCE 250              //Die maximale Distanz (in cm), welche die US-Sensoren messen
 
-#define UsInterrupt 3                 //Interrupt-Pin, der aktiviert wird, um die US-Werte abzufragen
+#define INTERRUPT 3                 //Interrupt-Pin, der aktiviert wird, um die US-Werte abzufragen
 #define LOOP_TIME 30                  //Zeit nach der die Schleife wiederholt wird
 #define LED_TIME 1000                 //Zeit nach der die Led umschaltet
 
@@ -40,7 +40,8 @@ NewPing sonarR(US_Right, US_Right, MAX_DISTANCE);   //Hier wird das Objekt für 
 void setup(){
   pinMode(13,OUTPUT);
   Serial.begin(9600);                                                        //startet die Serielle Kommunikation
-  pinMode(UsInterrupt,INPUT);                                                //definiert den Interupt-Pin als Eingang
+  pinMode(INTERRUPT,INPUT);                                                //definiert den Interupt-Pin als Eingang
+  attachInterrupt(digitalPinToInterrupt(INTERRUPT), usAusgeben, RISING);     //erstellt den Interrupt -> wenn das Signal am Interruptpin ansteigt, dann wird die Methode usAusgeben ausgeführt
 }
 //------------------------------------------------------------
 
