@@ -19,9 +19,6 @@
 #define LED_TIME 1000                 //Zeit nach der die Led umschaltet
 
 // Debug Modus, um Daten über USB auszulesen
-#define DEBUG true
-#define debug(_str_); if(DEBUG){Serial.print(_str_);}
-#define debugln(_str_); if(DEBUG){Serial.println(_str_);}
 unsigned long lastLoop = 0;
 unsigned long lastLed = 0;
 bool isLed = true;
@@ -39,7 +36,7 @@ NewPing sonarR(US_Right, US_Right, MAX_DISTANCE);   //Hier wird das Objekt für 
 
 void setup(){
   pinMode(13,OUTPUT);
-  Serial.begin(9600);                                                        //startet die Serielle Kommunikation
+  Serial.begin(115200);                                                        //startet die Serielle Kommunikation
   pinMode(INTERRUPT,INPUT);                                                //definiert den Interupt-Pin als Eingang
   attachInterrupt(digitalPinToInterrupt(INTERRUPT), usAusgeben, RISING);     //erstellt den Interrupt -> wenn das Signal am Interruptpin ansteigt, dann wird die Methode usAusgeben ausgeführt
 }
@@ -51,7 +48,6 @@ void loop(){                        //Loop-Methode
   wert[1] = sonarF.ping_cm();       //Auslesen des vorderen Ultraschallsensors
   wert[2] = sonarL.ping_cm();       //Auslesen des linken Ultraschallsensors
   wert[3] = sonarB.ping_cm();       //Auslesen des hinteren Ultraschallsensors
-  debugln("Right="+(String)wert[0]+" Front="+(String)wert[1]+" Left="+(String)wert[2]+" Back="+(String)wert[3]);
   do {    //kurze Wartezeit, da die Ultraschallsensoren nicht direkt hintereinander ausgelesen werden können
     if(millis()-lastLed>=LED_TIME) {
       lastLed = millis();
