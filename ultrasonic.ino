@@ -1,31 +1,28 @@
 /* ----------ICEBERG ROBOTS----------
- *  Ultraschallnano 2018
- *  - misst kontinuierlich Messwerte der Ultraschallsensoren
- *  - zum Abrufen sendet der Hauptkontroller einen Interupt-Befehl
+    Ultraschallnano 2018
+    - misst kontinuierlich Messwerte der Ultraschallsensoren
+    - zum Abrufen sendet der Hauptkontroller einen Interupt-Befehl
 */
 
 #include <NewPing.h>
 
 //Pins der Ultraschall-Sensoren
-#define US_Front 12                   //Der Ultraschallsensor vorne
-#define US_Back 9                     //Der Ultraschallsensor hinten
-#define US_Left 10                    //Der Ultraschallsensor links
-#define US_Right 11                   //Der Ultraschallsensor rechts
+#define INTERRUPT 3 //Interrupt-Pin, der aktiviert wird, um die US-Werte abzufragen
+#define LED 13      // Status-LED für Interrupt
+#define US_Front 12 // Ultraschallsensor vorne
+#define US_Back 9   // Ultraschallsensor hinten
+#define US_Left 10  // Ultraschallsensor links
+#define US_Right 11 // Ultraschallsensor rechts
 
-#define MAX_DISTANCE 250              //Die maximale Distanz (in cm), welche die US-Sensoren messen
-
-#define INTERRUPT 3                 //Interrupt-Pin, der aktiviert wird, um die US-Werte abzufragen
-#define LOOP_TIME 30                  //Zeit nach der die Schleife wiederholt wird
-#define LED_TIME 1000                 //Zeit nach der die Led umschaltet
+#define MAX_DISTANCE 255              //Die maximale Distanz (in cm), welche die US-Sensoren messen
 
 // Debug Modus, um Daten über USB auszulesen
-unsigned long lastLoop = 0;
-unsigned long lastLed = 0;
-bool isLed = true;
+unsigned long ledTimer = 0;
+unsigned long timestamp = 0;
 
 //------------------------------------------------------------
 
-int wert[] = {255, 255, 255, 255};                  //In diesem Array werden die Werte, die die US-Sensoren messen, gespeichert
+int values[] = {255, 255, 255, 255};                  //In diesem Array werden die Werte, die die US-Sensoren messen, gespeichert
 
 NewPing sonarF(US_Front, US_Front, MAX_DISTANCE);   //Hier wird das Objekt für den vorderen US-Sensor erstellt
 NewPing sonarB(US_Back, US_Back, MAX_DISTANCE);     //Hier wird das Objekt für den hinteren US-Sensor erstellt
@@ -34,34 +31,37 @@ NewPing sonarR(US_Right, US_Right, MAX_DISTANCE);   //Hier wird das Objekt für 
 
 //------------------------------------------------------------
 
-void setup(){
-  pinMode(13,OUTPUT);
-  Serial.begin(115200);                                                        //startet die Serielle Kommunikation
-  pinMode(INTERRUPT,INPUT);                                                //definiert den Interupt-Pin als Eingang
-  attachInterrupt(digitalPinToInterrupt(INTERRUPT), usAusgeben, RISING);     //erstellt den Interrupt -> wenn das Signal am Interruptpin ansteigt, dann wird die Methode usAusgeben ausgeführt
+void setup() {
+  pinMode(LED, OUTPUT);
+  Serial.begin(115200);                                                   // startet die Serielle Kommunikation
+  Serial.print("\nICEBERG ROBOTS\nULTRASONIC\n");                         // Startnachricht
+  pinMode(INTERRUPT, INPUT);                                              // definiert den Interupt-Pin als Eingang
+  attachInterrupt(digitalPinToInterrupt(INTERRUPT), usAusgeben, RISING);  // erstellt den Interrupt -> wenn das Signal am Interruptpin ansteigt, dann wird die Methode usAusgeben ausgeführt
 }
 //------------------------------------------------------------
 
-void loop(){                        //Loop-Methode
-  digitalWrite(13,isLed);
-  wert[0] = sonarR.ping_cm();       //Auslesen des rechten Ultraschallsensors
-  wert[1] = sonarF.ping_cm();       //Auslesen des vorderen Ultraschallsensors
-  wert[2] = sonarL.ping_cm();       //Auslesen des linken Ultraschallsensors
-  wert[3] = sonarB.ping_cm();       //Auslesen des hinteren Ultraschallsensors
+void loop() {                       //Loop-Methode
+  values[0] = sonarR.ping_cm();       //Auslesen des rechten Ultraschallsensors
+  digitalWrite(LED, millis() <= ledTimer);
+  values[1] = sonarF.ping_cm();       //Auslesen des vorderen Ultraschallsensors
+  digitalWrite(LED, millis() <= ledTimer);
+  values[2] = sonarL.ping_cm();       //Auslesen des linken Ultraschallsensors
+  digitalWrite(LED, millis() <= ledTimer);
+  values[3] = sonarB.ping_cm();       //Auslesen des hinteren Ultraschallsensors
+  timestamp = millis();
   do {    //kurze Wartezeit, da die Ultraschallsensoren nicht direkt hintereinander ausgelesen werden können
-    if(millis()-lastLed>=LED_TIME) {
-      lastLed = millis();
-      isLed = !isLed;
-    }
-  } while(millis()-lastLoop<LOOP_TIME);
-  lastLoop = millis();
-  
+    digitalWrite(LED, millis() <= ledTimer);
+  } while (millis() - timestamp < 30);
+  //Serial.print(String(values[0])+","+String(values[1])+","+String(values[2])+","+String(values[3])+"\n");
+
 }
 
 //------------------------------------------------------------
 
-void usAusgeben(){                  //Methode wird beim Interrupt aufgerufen und gibt dem Mega die US-Werte aus
-  for(int i=0;i<4;i++){
-    Serial.write(wert[i]);          //sendet die Werte über UART an den Arduino Mega
-  } 
+void usAusgeben() {                 //Methode wird beim Interrupt aufgerufen und gibt dem Mega die US-Werte aus
+  ledTimer = millis() + 50;
+  digitalWrite(LED, HIGH);
+  for (int i = 0; i < 4; i++) {
+    Serial.write(values[i]);          //sendet die Werte über UART an den Arduino Mega
+  }
 }
