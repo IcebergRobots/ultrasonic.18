@@ -14,7 +14,9 @@
 #define US_Left 10  // Ultraschallsensor links
 #define US_Right 11 // Ultraschallsensor rechts
 
-#define MAX_DISTANCE 255              //Die maximale Distanz (in cm), welche die US-Sensoren messen
+#define MAX_DISTANCE 253  // Die maximale Distanz (in cm), welche die US-Sensoren messen
+#define START_MARKER 254  // Startzeichen einer Nachricht
+#define END_MARKER 255    // Endzeichen einer Nachricht
 
 // Debug Modus, um Daten über USB auszulesen
 unsigned long ledTimer = 0;
@@ -61,7 +63,12 @@ void loop() {                       //Loop-Methode
 void usAusgeben() {                 //Methode wird beim Interrupt aufgerufen und gibt dem Mega die US-Werte aus
   ledTimer = millis() + 50;
   digitalWrite(LED, HIGH);
+  Serial.write(START_MARKER);
   for (int i = 0; i < 4; i++) {
-    Serial.write(values[i]);          //sendet die Werte über UART an den Arduino Mega
+    if (values[i] == 0) {
+      values[i] = 253;
+    }
+    Serial.write(constrain(values[i],0,253));          //sendet die Werte über UART an den Arduino Mega
   }
+  Serial.write(END_MARKER);
 }
