@@ -24,7 +24,7 @@ unsigned long timestamp = 0;
 
 //------------------------------------------------------------
 
-int values[] = {255, 255, 255, 255};                  //In diesem Array werden die Werte, die die US-Sensoren messen, gespeichert
+int values[] = {0, 0, 0, 0};                  //In diesem Array werden die Werte, die die US-Sensoren messen, gespeichert
 
 NewPing sonarF(US_Front, US_Front, MAX_DISTANCE);   //Hier wird das Objekt für den vorderen US-Sensor erstellt
 NewPing sonarB(US_Back, US_Back, MAX_DISTANCE);     //Hier wird das Objekt für den hinteren US-Sensor erstellt
@@ -65,9 +65,6 @@ void usAusgeben() {                 //Methode wird beim Interrupt aufgerufen und
   digitalWrite(LED, HIGH);
   Serial.write(START_MARKER);
   for (int i = 0; i < 4; i++) {
-    if (values[i] == 0) {
-      values[i] = 253;
-    }
     Serial.write(constrain(values[i],0,253));          //sendet die Werte über UART an den Arduino Mega
   }
   Serial.write(END_MARKER);
